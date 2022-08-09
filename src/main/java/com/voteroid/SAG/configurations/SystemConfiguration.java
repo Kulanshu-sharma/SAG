@@ -21,8 +21,10 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 public class SystemConfiguration {
+	
 	@Autowired
 	JWTVerificationFilter filter;
+	
 	@Autowired
 	JWTUtility jwtUtility;
 	

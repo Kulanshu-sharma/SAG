@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class ApplicationPropertiesConfiguration {
 	    private String JWT_TOKEN_VALIDITY;
 	    private String secret;
+	    private String accessKey;
 	    
 		public String getJWT_TOKEN_VALIDITY() {
 			return JWT_TOKEN_VALIDITY;
@@ -21,5 +22,12 @@ public class ApplicationPropertiesConfiguration {
 		public void setSecret(String secret) {
 			this.secret = secret;
 		}
+		public String getAccessKey() {
+			return accessKey;
+		}
+		public void setAccessKey(String accessKey) {
+			this.accessKey = accessKey;
+		}
+		
 	    
 }

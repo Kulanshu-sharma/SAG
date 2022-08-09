@@ -10,7 +10,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
+import com.voteroid.SAG.controllers.LicenseController;
+import com.voteroid.SAG.dtos.LicenseDataDTO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,9 +19,23 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JWTUtility {
+	
 	@Autowired
 	ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
 
+	public String generateLicenseKeyinFormOfTokenFromClient(LicenseDataDTO license) {
+		Map<String, Object> claims = new HashMap<String,Object>();
+		claims.put("userName",license.getUserName());
+		claims.put("created on",license.getCreatedOn());
+		claims.put("hitsPerDay",license.getAccessLimitPerDay());
+		claims.put("apiProvider",license.getApiProvider());
+		claims.put("tokenId",license.getTokenId());
+
+		return Jwts.builder().setClaims(claims).setSubject(license.getUserId()).setIssuedAt(new Date(System.currentTimeMillis()))
+		                     .setExpiration(new Date(System.currentTimeMillis() + license.getSubscriptionDurationinDays()*24*60*60*1000))
+		                     .signWith(SignatureAlgorithm.HS512, applicationPropertiesConfiguration.getSecret()).compact();
+
+	}
 	
 	public Claims verifyTokenAndSendClaims(String token) throws Exception {
 		return Jwts.parser()
