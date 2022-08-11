@@ -37,11 +37,11 @@ public class SystemConfiguration {
 				               .build();
 	}
 	
-	@Bean
+/*	@Bean
 	@Order(-1)
 	public GlobalFilter postFilter() {
 		return (exchange, chain) -> {
-			System.out.println("Used for License Key in Future");
+			System.out.println("Used for License Key in Future Pre Filter");
 			return chain.filter(exchange).then(Mono.fromRunnable(() -> { 
 				List<String> claims = exchange.getResponse().getHeaders().get("userData");
 				if(claims==null) {
@@ -57,5 +57,5 @@ public class SystemConfiguration {
 			}));
 		};
 	}
-
+*/
 }

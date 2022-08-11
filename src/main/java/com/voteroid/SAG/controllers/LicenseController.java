@@ -12,6 +12,7 @@ import com.voteroid.SAG.configurations.ApplicationPropertiesConfiguration;
 import com.voteroid.SAG.configurations.JWTUtility;
 import com.voteroid.SAG.dtos.LicenseDataDTO;
 import com.voteroid.SAG.exceptions.NoAPIProviderRecieved;
+import com.voteroid.SAG.exceptions.NoAccessAPIListRecieved;
 import com.voteroid.SAG.exceptions.NoLicenseDataRecieved;
 import com.voteroid.SAG.exceptions.NoLicenseUserIdRecieved;
 import com.voteroid.SAG.exceptions.NoLicenseUserNameRecieved;
@@ -27,12 +28,14 @@ public class LicenseController {
 	@Autowired
 	public ApplicationPropertiesConfiguration application;
 	
-	@PostMapping("/generateLicenseKey")
+	@PostMapping("/sag/generateLicenseKey")
 	public String generateLicenseKeyFromGateway(@RequestHeader("accessKey") String accessKey,@RequestBody LicenseDataDTO licenseDataDTO) {
         if(!application.getAccessKey().equals(accessKey))
         	throw new SAGAccessAuthenticationFailed();
 		if(licenseDataDTO==null) 
         	throw new NoLicenseDataRecieved();
+		if(licenseDataDTO.getApiIds()==null || licenseDataDTO.getApiIds().isEmpty())
+			throw new NoAccessAPIListRecieved();
         if(licenseDataDTO.getUserId()==null || licenseDataDTO.getUserId().isEmpty())
         	throw new NoLicenseUserIdRecieved();
         if(licenseDataDTO.getUserName()==null || licenseDataDTO.getUserName().isEmpty())

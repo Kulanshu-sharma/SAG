@@ -9,6 +9,7 @@ public class ApplicationPropertiesConfiguration {
 	    private String JWT_TOKEN_VALIDITY;
 	    private String secret;
 	    private String accessKey;
+	    private int apiThreshold;
 	    
 		public String getJWT_TOKEN_VALIDITY() {
 			return JWT_TOKEN_VALIDITY;
@@ -28,6 +29,13 @@ public class ApplicationPropertiesConfiguration {
 		public void setAccessKey(String accessKey) {
 			this.accessKey = accessKey;
 		}
+		public int getApiThreshold() {
+			return apiThreshold;
+		}
+		public void setApiThreshold(int apiThreshold) {
+			this.apiThreshold = apiThreshold;
+		}
+		
 		
 	    
 }

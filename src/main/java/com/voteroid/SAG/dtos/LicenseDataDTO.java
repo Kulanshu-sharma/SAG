@@ -1,5 +1,7 @@
 package com.voteroid.SAG.dtos;
 
+import java.util.Set;
+
 public class LicenseDataDTO {
 	
 	private String userId;
@@ -10,6 +12,8 @@ public class LicenseDataDTO {
 	private Long accessLimitPerDay;
 	private String apiProvider;
 	private String tokenId;
+	private Set<Integer> apiIds;
+	private int clientId;
 	
 	public String getUserId() {
 		return userId;
@@ -58,6 +62,18 @@ public class LicenseDataDTO {
 	}
 	public void setTokenId(String tokenId) {
 		this.tokenId = tokenId;
+	}
+	public Set<Integer> getApiIds() {
+		return apiIds;
+	}
+	public void setApiIds(Set<Integer> apiIds) {
+		this.apiIds = apiIds;
+	}
+	public int getClientId() {
+		return clientId;
+	}
+	public void setClientId(int clientId) {
+		this.clientId = clientId;
 	}
 	
 	

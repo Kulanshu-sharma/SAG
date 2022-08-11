@@ -50,4 +50,16 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler{
          ExceptionFieldsDTO body = new ExceptionFieldsDTO(LocalDateTime.now(),Constants.Exceptions.SAG_UNAUTHENTICATED_ACCESS);
          return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
+	
+	@ExceptionHandler(NoAccessAPIListRecieved.class)
+    public ResponseEntity<Object> handleNoLicenseUserIdRecievedException(NoAccessAPIListRecieved ex) {
+         ExceptionFieldsDTO body = new ExceptionFieldsDTO(LocalDateTime.now(),Constants.Exceptions.NO_API_ACCESS_LIST_RECIEVED);
+         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+	
+	@ExceptionHandler(NoAPIExistInSAG.class)
+    public ResponseEntity<Object> handleNoLicenseUserIdRecievedException(NoAPIExistInSAG ex) {
+         ExceptionFieldsDTO body = new ExceptionFieldsDTO(LocalDateTime.now(),"OOPS :( API is Not registered in SAG!!!");
+         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
 }

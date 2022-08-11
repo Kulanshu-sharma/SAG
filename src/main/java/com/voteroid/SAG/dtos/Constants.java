@@ -9,5 +9,6 @@ public interface Constants {
 		public static final String NO_SUBSCRIPTION_DURATION_RECIEVED = "No Subscription Duration recieved to generate the license!!!";
 		public static final String NO_API_PROVIDER_RECIEVED = "No API Provider data is Recieved!!!";
 		public static final String SAG_UNAUTHENTICATED_ACCESS = "Invalid Access Key!!! Please Contact Voteroid";
+		public static final String NO_API_ACCESS_LIST_RECIEVED = "No Access API List Recieved!!! Please read documentation of SAG API's";
 	}
 }

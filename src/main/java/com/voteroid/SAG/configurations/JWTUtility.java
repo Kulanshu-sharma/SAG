@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +22,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JWTUtility {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(JWTVerificationFilter.class);
+	
 	@Autowired
 	ApplicationPropertiesConfiguration applicationPropertiesConfiguration;
+	
+	@Autowired 
+	GeneralOperations generalOperations;
 
 	public String generateLicenseKeyinFormOfTokenFromClient(LicenseDataDTO license) {
 		Map<String, Object> claims = new HashMap<String,Object>();
@@ -30,7 +37,15 @@ public class JWTUtility {
 		claims.put("hitsPerDay",license.getAccessLimitPerDay());
 		claims.put("apiProvider",license.getApiProvider());
 		claims.put("tokenId",license.getTokenId());
-
+		claims.put("clientId",license.getClientId());
+        if(license.getApiIds().size()<applicationPropertiesConfiguration.getApiThreshold()) {
+        	LOGGER.info("Count of API's Access recieved to generate token is : ",license.getApiIds().size());
+        	claims.put("accessTo",license.getApiIds());
+        }
+        else {
+        	LOGGER.info("Count of API's Access recieved to generate token is : ",license.getApiIds().size());
+        	//Go For Database Operations...
+        }
 		return Jwts.builder().setClaims(claims).setSubject(license.getUserId()).setIssuedAt(new Date(System.currentTimeMillis()))
 		                     .setExpiration(new Date(System.currentTimeMillis() + license.getSubscriptionDurationinDays()*24*60*60*1000))
 		                     .signWith(SignatureAlgorithm.HS512, applicationPropertiesConfiguration.getSecret()).compact();
