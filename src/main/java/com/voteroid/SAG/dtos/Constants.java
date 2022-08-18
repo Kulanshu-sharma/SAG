@@ -11,4 +11,12 @@ public interface Constants {
 		public static final String SAG_UNAUTHENTICATED_ACCESS = "Invalid Access Key!!! Please Contact Voteroid";
 		public static final String NO_API_ACCESS_LIST_RECIEVED = "No Access API List Recieved!!! Please read documentation of SAG API's";
 	}
+	
+	interface Messages {
+		public static final String INVALID_API_ID= "Recieved API ID is Invalid or Not Yet Registered !!!";
+		public static final String API_BLOCKED_SUCCESSFULLY= "API Blocked Successfully for New Subscriptions !!!";
+		public static final String NO_API_REGISTERED_BY_CLIENT_YET = "NO API'S Are Yet Registered for Your API Provider !!!";
+		public static final String ALREADY_NOT_BLOCKED = "API is Not Already Blocked !!!";
+		public static final String API_UN_BLOCKED_SUCCESSFULLY = "API Un-Blocked Successfully for New Subscriptions !!!";
+	}
 }

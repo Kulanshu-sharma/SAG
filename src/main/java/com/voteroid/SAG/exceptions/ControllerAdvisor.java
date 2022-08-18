@@ -62,4 +62,10 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler{
          ExceptionFieldsDTO body = new ExceptionFieldsDTO(LocalDateTime.now(),"OOPS :( API is Not registered in SAG!!!");
          return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
+	
+	@ExceptionHandler(NoClientIdRecieved.class)
+    public ResponseEntity<Object> handleNoLicenseUserIdRecievedException(NoClientIdRecieved ex) {
+         ExceptionFieldsDTO body = new ExceptionFieldsDTO(LocalDateTime.now(),"OOPS :( No Client Id Recieved!!!");
+         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
 }

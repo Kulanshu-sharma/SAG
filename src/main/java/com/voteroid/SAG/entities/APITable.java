@@ -25,21 +25,25 @@ public class APITable {
 	@Column(name="API_URL")
 	public String apiURL;
 	
-	@Column(name="CLIENT_NAME")
-	public String clientName;
+	@Column(name="METHOD_NAME")
+	public String methodName;
+	
+	@Column(name="BLOCKED")
+	public boolean blocked;
 
 	public APITable() {
 		
 	}
 	
-	public APITable(int apiId, int clientId, String apiCall, float rate, String apiURL, String clientName) {
+	public APITable(int apiId, int clientId, String apiCall, float rate, String apiURL, String methodName, boolean blocked) {
 		super();
 		this.apiId = apiId;
 		this.clientId = clientId;
 		this.apiCall = apiCall;
 		this.rate = rate;
 		this.apiURL = apiURL;
-		this.clientName = clientName;
+		this.methodName = methodName;
+		this.blocked = blocked;
 	}
 
 	public int getApiId() {
@@ -82,13 +86,22 @@ public class APITable {
 		this.apiURL = apiURL;
 	}
 
-	public String getClientName() {
-		return clientName;
+	public String getMethodName() {
+		return methodName;
 	}
 
-	public void setClientName(String clientName) {
-		this.clientName = clientName;
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
 	}
+
+	public boolean isBlocked() {
+		return blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		this.blocked = blocked;
+	}
+
 	
 	
 }
