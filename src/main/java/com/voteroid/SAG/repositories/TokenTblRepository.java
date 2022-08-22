@@ -7,4 +7,5 @@ import com.voteroid.SAG.entities.TokenTbl;
 public interface TokenTblRepository extends CrudRepository<TokenTbl,Integer> {
 
 	public TokenTbl findByClientId(int clientId);
+	public TokenTbl findByUserId(int userId);
 }

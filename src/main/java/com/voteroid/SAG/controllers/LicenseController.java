@@ -1,7 +1,9 @@
 package com.voteroid.SAG.controllers;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.voteroid.SAG.configurations.ApplicationPropertiesConfiguration;
@@ -175,6 +178,43 @@ public class LicenseController {
 		repository.save(apiTable.get());
 		response.setSuccessfull(true);
 		response.setMessage("Subscription Amount for API "+apiId+" is successfully changed from "+prevPrice+" to "+amount);
+		return response;
+	}
+	
+	@GetMapping("/sag/fetchTokens/client")
+	public Response fetchTokensForClientId(@RequestHeader("accessKey") String accessKey,@RequestParam int clientId) {
+		Response response = new Response();
+		if(!application.getAccessKey().equals(accessKey))
+        	throw new SAGAccessAuthenticationFailed();
+		TokenTbl tokenTbl = tokenTblRepository.findByClientId(clientId);
+		Map<String,Object> dataMap = new HashMap<String,Object>();
+		dataMap.put("userId",tokenTbl.getUserId());
+		dataMap.put("tokenId",tokenTbl.getTokenId());
+		dataMap.put("apiIds",tokenTbl.getApiIds());
+		dataMap.put("expiredOn",tokenTbl.getExpiresOn());
+		dataMap.put("createdOn", tokenTbl.getCreatedOn());
+		response.setSuccessfull(true);
+		response.setData(dataMap);
+		response.setMessage("Token Data Delivered !!!");
+		return response;
+	}
+	
+	@GetMapping("/sag/fetchTokens/user")
+	public Response fetchTokensForUserId(@RequestHeader("accessKey") String accessKey,@RequestParam int userId) {
+		Response response = new Response();
+		if(!application.getAccessKey().equals(accessKey))
+        	throw new SAGAccessAuthenticationFailed();
+		TokenTbl tokenTbl = tokenTblRepository.findByUserId(userId);
+		Map<String,Object> dataMap = new HashMap<String,Object>();
+		dataMap.put("clientId",tokenTbl.getClientId());
+		dataMap.put("tokenId",tokenTbl.getTokenId());
+		dataMap.put("apiIds",tokenTbl.getApiIds());
+		dataMap.put("expiredOn",tokenTbl.getExpiresOn());
+		dataMap.put("createdOn", tokenTbl.getCreatedOn());
+		dataMap.put("token",tokenTbl.getToken());
+		response.setSuccessfull(true);
+		response.setData(dataMap);
+		response.setMessage("Token Data Delivered !!!");
 		return response;
 	}
 }
