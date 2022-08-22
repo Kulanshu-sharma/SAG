@@ -1,8 +1,8 @@
 package com.voteroid.SAG.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +19,16 @@ import com.voteroid.SAG.dtos.Constants;
 import com.voteroid.SAG.dtos.LicenseDataDTO;
 import com.voteroid.SAG.dtos.Response;
 import com.voteroid.SAG.entities.APITable;
+import com.voteroid.SAG.entities.TokenTbl;
 import com.voteroid.SAG.exceptions.NoAPIProviderRecieved;
 import com.voteroid.SAG.exceptions.NoAccessAPIListRecieved;
 import com.voteroid.SAG.exceptions.NoClientIdRecieved;
 import com.voteroid.SAG.exceptions.NoLicenseDataRecieved;
 import com.voteroid.SAG.exceptions.NoLicenseUserIdRecieved;
-import com.voteroid.SAG.exceptions.NoLicenseUserNameRecieved;
 import com.voteroid.SAG.exceptions.NoSubscriptionDurationRecieved;
 import com.voteroid.SAG.exceptions.SAGAccessAuthenticationFailed;
 import com.voteroid.SAG.repositories.APITblRepository;
+import com.voteroid.SAG.repositories.TokenTblRepository;
 
 @RestController
 public class LicenseController {
@@ -41,26 +42,42 @@ public class LicenseController {
 	@Autowired
 	public APITblRepository repository;
 	
+	@Autowired
+	public TokenTblRepository tokenTblRepository;
+	
 	@PostMapping("/sag/generateLicenseKey")
-	public String generateLicenseKeyFromGateway(@RequestHeader("accessKey") String accessKey,@RequestBody LicenseDataDTO licenseDataDTO) {
+	public Response generateLicenseKeyFromGateway(@RequestHeader("accessKey") String accessKey,@RequestBody LicenseDataDTO licenseDataDTO) {
         if(!application.getAccessKey().equals(accessKey))
         	throw new SAGAccessAuthenticationFailed();
+        Response response = new Response();
+        TokenTbl tokenTbl = new TokenTbl();
 		if(licenseDataDTO==null) 
         	throw new NoLicenseDataRecieved();
 		if(licenseDataDTO.getApiIds()==null || licenseDataDTO.getApiIds().isEmpty())
 			throw new NoAccessAPIListRecieved();
-        if(licenseDataDTO.getUserId()==null || licenseDataDTO.getUserId().isEmpty())
+        if(licenseDataDTO.getUserId()==0)
         	throw new NoLicenseUserIdRecieved();
-        if(licenseDataDTO.getUserName()==null || licenseDataDTO.getUserName().isEmpty())
-        	throw new NoLicenseUserNameRecieved();
-        if(licenseDataDTO.getSubscriptionDurationinDays()==null||licenseDataDTO.getSubscriptionDurationinDays()==0)
+        if(licenseDataDTO.getSubscriptionDurationinDays()==0)
         	throw new NoSubscriptionDurationRecieved();
-        if(licenseDataDTO.getApiProvider()==null || licenseDataDTO.getApiProvider().isEmpty())
+        if(licenseDataDTO.getClientId()==0)
         	throw new NoAPIProviderRecieved();
-        licenseDataDTO.setTokenId(UUID.randomUUID().toString());
-        licenseDataDTO.setCreatedOn(System.currentTimeMillis());
-        
-		return jwtUtility.generateLicenseKeyinFormOfTokenFromClient(licenseDataDTO);
+        tokenTbl.setClientId(licenseDataDTO.getClientId());
+        tokenTbl.setUserId(licenseDataDTO.getUserId());
+        tokenTbl.setExpiresOn(LocalDate.now().plusDays(licenseDataDTO.getSubscriptionDurationinDays()));
+        tokenTbl.setSuspended(false);
+        tokenTbl.setCreatedOn(LocalDate.now());
+        StringBuilder apiListString= new StringBuilder();
+        apiListString.append(licenseDataDTO.getApiIds().get(0));
+        for(int i=1;i<licenseDataDTO.getApiIds().size();i++)
+        	apiListString.append(Constants.General.DELIMITER+licenseDataDTO.getApiIds().get(i));
+        tokenTbl.setApiIds(apiListString.toString());
+		String token = jwtUtility.generateLicenseKeyinFormOfTokenFromClient(licenseDataDTO);
+		tokenTbl.setToken(token);
+		tokenTblRepository.save(tokenTbl);
+		response.setSuccessfull(true);
+		response.setData(token);
+		response.setMessage("License Generated Successfully");
+		return response;
 	}
 	
 	@PostMapping("/sag/registerStandardApi")
@@ -138,6 +155,26 @@ public class LicenseController {
 		response.setSuccessfull(true);
 		response.setMessage("API'S List Sent Successfully");
 		response.setData(apiTables);
+		return response;
+	}
+	
+	@PutMapping("/sag/setApiPrice/apiId/{apiId}/amount/{amount}")
+	public Response setorUpdateApiPrice(@RequestHeader("accessKey") String accessKey,@PathVariable(name="apiId") int apiId,
+																					 @PathVariable(name="amount") float amount) {
+		if(!application.getAccessKey().equals(accessKey))
+        	throw new SAGAccessAuthenticationFailed();
+		Response response = new Response();
+		Optional<APITable> apiTable = repository.findById(apiId);
+		if(!apiTable.isPresent()) {
+			response.setSuccessfull(false);
+			response.setMessage(Constants.Messages.INVALID_API_ID+" : "+apiId);
+			return response;
+		}
+	    float prevPrice = apiTable.get().getRate();
+		apiTable.get().setRate(amount);
+		repository.save(apiTable.get());
+		response.setSuccessfull(true);
+		response.setMessage("Subscription Amount for API "+apiId+" is successfully changed from "+prevPrice+" to "+amount);
 		return response;
 	}
 }

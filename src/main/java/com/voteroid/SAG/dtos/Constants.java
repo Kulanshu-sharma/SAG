@@ -19,4 +19,8 @@ public interface Constants {
 		public static final String ALREADY_NOT_BLOCKED = "API is Not Already Blocked !!!";
 		public static final String API_UN_BLOCKED_SUCCESSFULLY = "API Un-Blocked Successfully for New Subscriptions !!!";
 	}
+	
+	interface General{
+		public static final String DELIMITER=":";
+	}
 }
