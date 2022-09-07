@@ -86,10 +86,15 @@ public class LicenseController {
 	@PostMapping("/sag/registerStandardApi")
 	public boolean registerStandardApi(@RequestHeader("accessKey") String accessKey,@RequestBody APITable apiTbl) {
 		if(!application.getAccessKey().equals(accessKey))
-        	throw new SAGAccessAuthenticationFailed();
+			throw new SAGAccessAuthenticationFailed();
 		apiTbl.setClientId(apiTbl.getApiId()/100000);
-		repository.save(apiTbl);
-		return true;
+		try {
+			repository.save(apiTbl);
+			return true;
+		}
+		catch(Exception ex) {
+			return false;
+		}
 	}
 	
 	@GetMapping("/sag/apisList/{clientId}")
